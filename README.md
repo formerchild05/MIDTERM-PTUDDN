@@ -1,15 +1,13 @@
-bật k8s trong docker desktop 
+sử dụng docker compose để chạy mysql và spring ở 2 container
+trong mysql dùng volume để lưu persistence data
 
-build file jar của source code:
-`mvn clean package -DskipTests`
+chạy `docker-compose up --build` để chạy docker compose
+![img.png](img.png)
 
-build image của app:
-`docker build -t spring-app:latest .`
+API :
 
-sau khi build xong thì chạy các file deploy của app và mysql:
-`kubectl apply -f mysql-pvc.yaml`
-`kubectl apply -f deployment-mysql.yaml`
-`kubectl apply -f service-mysql.yaml`
+`/get` lấy các card đang có
 
-`kubectl apply -f deployment.yaml`
-`kubectl apply -f service.yaml`
+`/create/{name}` tạo card với name
+
+`/` test api
