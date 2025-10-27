@@ -51,6 +51,6 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          docker build -t $DOCKER_USERNAME/springboot:latest .
+          docker build -t $DOCKER_USERNAME/midterm:latest .
           echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-          docker push $DOCKER_USERNAME/springboot:latest
+          docker push $DOCKER_USERNAME/midterm:latest
