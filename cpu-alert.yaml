@@ -1,0 +1,35 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: backend-cpu-alert
+  namespace: monitoring # Quan trọng: Phải tạo trong namespace monitoring
+  labels:
+    # Prometheus Operator sẽ tự tìm thấy rule này
+    release: prometheus 
+spec:
+  groups:
+  - name: backend-alerts
+    rules:
+    - alert: BackendCpuUsageHigh
+      # Đây là câu query (truy vấn)
+      # Nó tính: (tổng CPU pod đang dùng) / (tổng CPU pod được giới hạn)
+      expr: |
+        (
+          sum(rate(container_cpu_usage_seconds_total{namespace="app-m", pod=~"backend-.*"}[5m]))
+        /
+          sum(kube_pod_container_resource_limits{resource="cpu", namespace="app-m", pod=~"backend-.*"})
+        ) > 0.8 # 0.8 nghĩa là 80%
+        
+      # Điều kiện "trong 1 phút" của bạn
+      for: 1m 
+      
+      labels:
+        severity: warning # Mức độ nghiêm trọng
+        
+      # Thông báo sẽ hiển thị trong Slack/email
+      annotations: 
+        summary: "Pod {{ $labels.pod }} đang sử dụng CPU cao!"
+        description: |
+          Pod {{ $labels.pod }} trong namespace {{ $labels.namespace }} 
+          đã sử dụng hơn 80% CPU limit trong vòng 1 phút qua.
+          Giá trị hiện tại: {{ $value | printf "%.2f" }}%
